@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · Fieldnote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest-900:#0F221B;
+    --forest-800:#15302670;
+    --forest-800-solid:#17332A;
+    --forest-700:#1E3E33;
+    --ivory:#F3EFE4;
+    --ivory-dim:#C9CFC6;
+    --sage:#8FA396;
+    --brass:#C9A24B;
+    --brass-bright:#E0BE72;
+    --error:#E08585;
+    --radius:3px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family:'Inter', -apple-system, sans-serif;
+    background:var(--forest-900);
+    color:var(--ivory);
+  }
+
+  body{
+    display:grid;
+    grid-template-columns:1.05fr 1fr;
+    min-height:100vh;
+  }
+
+  /* ---------- LEFT: brand panel ---------- */
+  .brand{
+    position:relative;
+    background:var(--forest-900);
+    padding:56px 64px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    overflow:hidden;
+  }
+
+  .brand::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-radial-gradient(circle at 18% 30%, transparent 0, transparent 38px, rgba(201,162,75,0.055) 39px, transparent 40px),
+      repeating-radial-gradient(circle at 82% 78%, transparent 0, transparent 52px, rgba(143,163,150,0.06) 53px, transparent 54px);
+    pointer-events:none;
+  }
+
+  .brand-mark{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    letter-spacing:0.01em;
+    color:var(--ivory);
+    z-index:1;
+  }
+
+  .brand-mark svg{ flex-shrink:0; }
+
+  .brand-copy{
+    position:relative;
+    max-width:420px;
+    z-index:1;
+  }
+
+  .brand-copy h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(34px, 4vw, 46px);
+    line-height:1.12;
+    margin:0 0 20px;
+    color:var(--ivory);
+  }
+
+  .brand-copy p{
+    font-size:15.5px;
+    line-height:1.65;
+    color:var(--ivory-dim);
+    margin:0;
+  }
+
+  .brand-foot{
+    position:relative;
+    z-index:1;
+    display:flex;
+    gap:28px;
+    font-size:13px;
+    color:var(--sage);
+  }
+
+  .brand-foot span{ display:block; }
+  .brand-foot strong{
+    display:block;
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    font-weight:500;
+    color:var(--ivory);
+    margin-bottom:2px;
+  }
+
+  /* ---------- RIGHT: form panel ---------- */
+  .panel{
+    background:var(--ivory);
+    color:var(--forest-900);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+  }
+
+  .form-wrap{
+    width:100%;
+    max-width:360px;
+  }
+
+  .form-wrap h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:27px;
+    margin:0 0 6px;
+    color:var(--forest-900);
+  }
+
+  .form-wrap > p.sub{
+    margin:0 0 34px;
+    font-size:14px;
+    color:#5C6B62;
+  }
+
+  .form-wrap > p.sub a{
+    color:var(--forest-700);
+    font-weight:600;
+    text-decoration:none;
+    border-bottom:1px solid currentColor;
+  }
+
+  form{ display:flex; flex-direction:column; gap:20px; }
+
+  .field{
+    position:relative;
+  }
+
+  .field input{
+    width:100%;
+    padding:20px 14px 8px;
+    font-size:15px;
+    font-family:'Inter', sans-serif;
+    color:var(--forest-900);
+    background:transparent;
+    border:1px solid #C7C2B2;
+    border-radius:var(--radius);
+    outline:none;
+    transition:border-color .16s ease;
+  }
+
+  .field input::placeholder{ color:transparent; }
+
+  .field label{
+    position:absolute;
+    left:14px;
+    top:18px;
+    font-size:15px;
+    color:#6E7A70;
+    pointer-events:none;
+    transform-origin:left top;
+    transition:transform .14s ease, top .14s ease, color .14s ease;
+  }
+
+  .field input:focus{
+    border-color:var(--brass);
+  }
+
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label{
+    top:8px;
+    transform:scale(0.74);
+    color:#8A6A22;
+  }
+
+  .field.has-error input{ border-color:var(--error); }
+  .field.has-error label{ color:var(--error); }
+
+  .field-msg{
+    min-height:16px;
+    font-size:12.5px;
+    color:var(--error);
+    margin-top:5px;
+    display:none;
+  }
+  .field.has-error .field-msg{ display:block; }
+
+  .pw-toggle{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:4px;
+    color:#8A9188;
+    display:flex;
+  }
+  .pw-toggle:hover{ color:var(--forest-700); }
+  .pw-toggle svg{ width:18px; height:18px; }
+
+  .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:13.5px;
+    margin-top:-4px;
+  }
+
+  .remember{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#4B564E;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .remember input{
+    appearance:none;
+    -webkit-appearance:none;
+    width:16px;
+    height:16px;
+    border:1px solid #B3AE9C;
+    border-radius:3px;
+    display:inline-grid;
+    place-content:center;
+    cursor:pointer;
+    background:#fff;
+  }
+  .remember input::before{
+    content:"";
+    width:9px;
+    height:9px;
+    transform:scale(0);
+    transition:transform .1s ease;
+    background:var(--brass);
+    border-radius:1px;
+  }
+  .remember input:checked::before{ transform:scale(1); }
+
+  .row a{
+    color:var(--forest-700);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .row a:hover{ text-decoration:underline; }
+
+  button.submit{
+    margin-top:6px;
+    padding:14px;
+    font-family:'Inter', sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    letter-spacing:0.01em;
+    color:var(--forest-900);
+    background:var(--brass);
+    border:none;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  button.submit:hover{ background:var(--brass-bright); }
+  button.submit:active{ transform:translateY(1px); }
+  button.submit:focus-visible,
+  .field input:focus-visible,
+  .pw-toggle:focus-visible,
+  .row a:focus-visible{
+    outline:2px solid var(--forest-700);
+    outline-offset:2px;
+  }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    color:#9A9686;
+    font-size:12.5px;
+    margin:22px 0 18px;
+  }
+  .divider::before, .divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#DDD8C8;
+  }
+
+  .alt-auth{
+    display:flex;
+    gap:10px;
+  }
+  .alt-auth button{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:11px;
+    font-family:'Inter', sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    background:#fff;
+    border:1px solid #D7D2C1;
+    border-radius:var(--radius);
+    color:#333B34;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .alt-auth button:hover{ border-color:#B3AE9C; background:#FBFAF6; }
+
+  @media (max-width: 860px){
+    body{ grid-template-columns:1fr; }
+    .brand{
+      padding:40px 28px;
+      min-height:260px;
+    }
+    .brand-foot{ display:none; }
+    .brand-copy h1{ font-size:28px; }
+    .brand-copy p{ display:none; }
+    .panel{ padding:32px 24px 56px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="brand">
+    <div class="brand-mark">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 1L1 6.5V15.5L11 21L21 15.5V6.5L11 1Z" stroke="#C9A24B" stroke-width="1.3"/>
+        <path d="M11 1V21M1 6.5L11 11M21 6.5L11 11" stroke="#C9A24B" stroke-width="1" opacity="0.55"/>
+      </svg>
+      Fieldnote
+    </div>
+
+    <div class="brand-copy">
+      <h1>Keep track of what the day taught you.</h1>
+      <p>Sign back in to pick up your notes, maps, and the trails you've logged since your last visit.</p>
+    </div>
+
+    <div class="brand-foot">
+      <span><strong>12,400+</strong>journals kept</span>
+      <span><strong>86</strong>countries logged</span>
+      <span><strong>4.9</strong>average rating</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="form-wrap">
+      <h2>Welcome back</h2>
+      <p class="sub">New here? <a href="#">Create an account</a></p>
+
+      <form id="loginForm" novalidate>
+        <div class="field" id="emailField">
+          <input type="email" id="email" placeholder=" " autocomplete="email" required>
+          <label for="email">Email address</label>
+          <div class="field-msg">Enter a valid email address.</div>
+        </div>
+
+        <div class="field" id="pwField">
+          <input type="password" id="password" placeholder=" " autocomplete="current-password" required>
+          <label for="password">Password</label>
+          <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+          <div class="field-msg">Password can't be empty.</div>
+        </div>
+
+        <div class="row">
+          <label class="remember">
+            <input type="checkbox" id="remember">
+            Remember me
+          </label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="submit">Sign in</button>
+      </form>
+
+      <div class="divider">or continue with</div>
+      <div class="alt-auth">
+        <button type="button">
+          <svg width="16" height="16" viewBox="0 0 16 16"><path fill="#4285F4" d="M15.68 8.18c0-.58-.05-1.13-.15-1.66H8v3.14h4.3a3.68 3.68 0 0 1-1.6 2.42v2h2.58c1.51-1.39 2.4-3.44 2.4-5.9z"/><path fill="#34A853" d="M8 16c2.16 0 3.97-.72 5.29-1.92l-2.58-2c-.72.48-1.63.77-2.71.77-2.08 0-3.85-1.41-4.48-3.3H.86v2.07A8 8 0 0 0 8 16z"/><path fill="#FBBC05" d="M3.52 9.55A4.8 4.8 0 0 1 3.27 8c0-.54.09-1.06.25-1.55V4.38H.86A8 8 0 0 0 0 8c0 1.29.31 2.51.86 3.62l2.66-2.07z"/><path fill="#EA4335" d="M8 3.18c1.18 0 2.23.4 3.06 1.2l2.29-2.29C11.96.9 10.15.18 8 .18a8 8 0 0 0-7.14 4.2l2.66 2.07C4.15 4.59 5.92 3.18 8 3.18z"/></svg>
+          Google
+        </button>
+        <button type="button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#1A1A1A"><path d="M11.2 8.5c0-1.72 1.4-2.55 1.46-2.6-.8-1.17-2.05-1.33-2.5-1.35-1.06-.11-2.08.63-2.62.63-.55 0-1.38-.62-2.27-.6a3.37 3.37 0 0 0-2.83 1.72c-1.22 2.1-.31 5.22.87 6.93.58.83 1.27 1.77 2.18 1.73.87-.03 1.2-.56 2.26-.56 1.05 0 1.35.56 2.27.55.94-.02 1.53-.85 2.1-1.68.66-.97.93-1.9.95-1.95-.02-.01-1.82-.7-1.84-2.79M9.56 3.34c.47-.58.79-1.38.7-2.18-.68.03-1.5.45-1.99 1.02-.44.5-.82 1.32-.72 2.1.76.06 1.53-.39 2.01-.94"/></svg>
+          Apple
+        </button>
+      </div>
+    </div>
+  </section>
+
+<script>
+  const form = document.getElementById('loginForm');
+  const emailField = document.getElementById('emailField');
+  const pwField = document.getElementById('pwField');
+  const emailInput = document.getElementById('email');
+  const pwInput = document.getElementById('password');
+  const pwToggle = document.getElementById('pwToggle');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  pwToggle.addEventListener('click', () => {
+    const isPw = pwInput.type === 'password';
+    pwInput.type = isPw ? 'text' : 'password';
+    pwToggle.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
+    eyeIcon.innerHTML = isPw
+      ? '<path d="M2 2l20 20M9.9 5.2A10.6 10.6 0 0 1 12 5c7 0 11 7 11 7a17.9 17.9 0 0 1-4.15 4.65M6.3 6.3C3.5 8.1 1 12 1 12s4 7 11 7c1.6 0 3.06-.36 4.34-.96M14.12 14.12a3 3 0 1 1-4.24-4.24"/>'
+      : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
+  });
+
+  function validate(){
+    let ok = true;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+    emailField.classList.toggle('has-error', !emailOk);
+    if(!emailOk) ok = false;
+
+    const pwOk = pwInput.value.trim().length > 0;
+    pwField.classList.toggle('has-error', !pwOk);
+    if(!pwOk) ok = false;
+
+    return ok;
+  }
+
+  [emailInput, pwInput].forEach(el => {
+    el.addEventListener('input', () => {
+      const parent = el.closest('.field');
+      if(parent.classList.contains('has-error')) validate();
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if(!validate()) return;
+
+    const btn = form.querySelector('.submit');
+    const original = btn.textContent;
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      btn.textContent = 'Signed in ✓';
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.disabled = false;
+      }, 1400);
+    }, 900);
+  });
+</script>
+
+</body>
+</html>
